@@ -1,0 +1,17 @@
+<idea-plugin>
+    <id>org.example.SCA</id>
+    <name>Smart Code Analytics</name>
+    <vendor></vendor>
+
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.java</depends>
+
+    <actions>
+        <!-- Add your actions here -->
+        <action id="PatternAnalyzeAction" class="PatternAnalyzeAction" text="Smart Code Analytics">
+            <add-to-group group-id="AnalyzeActions" anchor="last"/>
+        </action>
+    </actions>
+</idea-plugin>
