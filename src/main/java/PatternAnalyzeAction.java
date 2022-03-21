@@ -4,45 +4,24 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.AssignExpr;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.Statement;
-import com.github.javaparser.metamodel.NodeMetaModel;
-import com.github.javaparser.printer.XmlPrinter;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.printer.YamlPrinter;
-import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
-import com.intellij.designer.model.MetaModel;
-import com.intellij.lang.*;
-import com.intellij.lang.impl.PsiBuilderFactoryImpl;
-import com.intellij.lang.impl.PsiBuilderImpl;
-import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.command.WriteCommandAction;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.*;
-import com.intellij.openapi.ui.MessageType;
-import com.intellij.openapi.ui.popup.Balloon;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.wm.StatusBar;
-import com.intellij.openapi.wm.WindowManager;
 import com.intellij.psi.*;
-import com.intellij.psi.impl.file.PsiDirectoryFactory;
-import com.intellij.psi.impl.file.PsiJavaDirectoryImpl;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.search.ProjectScope;
-import com.intellij.ui.awt.RelativePoint;
-import org.apache.tools.ant.taskdefs.Java;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
+import java.io.IOException;
+import java.util.List;
 
 public class PatternAnalyzeAction extends AnAction {
 
@@ -61,43 +40,87 @@ public class PatternAnalyzeAction extends AnAction {
                 variableDeclarator.setName("id");
                 variableDeclarator.setType(long.class);
 
+                VariableDeclarator variableDeclarator1 = new VariableDeclarator();
+                variableDeclarator1.setName("person");
+                variableDeclarator1.setType(new ClassOrInterfaceType("Person"));
+
                 FieldDeclaration fieldDeclaration = new FieldDeclaration();
                 fieldDeclaration.setModifiers(Modifier.Keyword.PRIVATE);
                 fieldDeclaration.setVariables(NodeList.nodeList(variableDeclarator));
+
+                FieldDeclaration fieldDeclaration1 = new FieldDeclaration();
+                fieldDeclaration1.setModifiers(Modifier.Keyword.PRIVATE);
+                fieldDeclaration1.setVariables(NodeList.nodeList(variableDeclarator1));
+
+
 
                 Parameter parameter = new Parameter();
                 parameter.setType(long.class);
                 parameter.setName("id");
 
 
+                BlockStmt blockStmt = new BlockStmt();
+                ExpressionStmt expressionStmt = new ExpressionStmt();
+                AssignExpr assignExpr = new AssignExpr();
+                assignExpr.setOperator(AssignExpr.Operator.ASSIGN);
+                assignExpr.setTarget(new FieldAccessExpr().setName("id"));
+                assignExpr.setValue(new NameExpr().setName("id"));
+
+                expressionStmt.setExpression(assignExpr);
+                blockStmt.setStatements(NodeList.nodeList(expressionStmt));
+
                 MethodDeclaration setterId = new MethodDeclaration();
                 setterId.setModifiers(Modifier.Keyword.PUBLIC);
                 setterId.setType(void.class);
                 setterId.setName("setId");
                 setterId.setParameters(NodeList.nodeList(parameter));
+                setterId.setBody(blockStmt);
 
+                BlockStmt blockStmt1 = new BlockStmt();
+                ReturnStmt returnStmt = new ReturnStmt();
+                returnStmt.setExpression(new NameExpr().setName("id"));
+                blockStmt1.setStatements(NodeList.nodeList(returnStmt));
 
 
                 MethodDeclaration getterId = new MethodDeclaration();
                 getterId.setType(long.class);
                 getterId.setModifiers(Modifier.Keyword.PUBLIC);
                 getterId.setName("getId");
+                getterId.setBody(blockStmt1);
 
                 testClass.add(psiElementFactory.createMethodFromText(getterId.toString().replace("\r", ""), testClass));
                 testClass.add(psiElementFactory.createMethodFromText(setterId.toString().replace("\r", ""), testClass));
                 testClass.add(psiElementFactory.createFieldFromText(fieldDeclaration.toString(), testClass));
+                testClass.add(psiElementFactory.createFieldFromText(fieldDeclaration1.toString(), testClass));
 
                 // todo think about PsiBuilder, PsiParser
 
-                ASTNode astNode = testClass.getNode();
-                ASTNode root = astNode.getFirstChildNode();
+//                ASTNode astNode = testClass.getNode();
+//                ASTNode root = astNode.getFirstChildNode();
+//                try {
+//                    exampleOfGenerateASTTreeInYAML();
+//                } catch (FileNotFoundException ex) {
+//                    ex.printStackTrace();
+//                }
+                PsiFile[] psiFiles = psiDirectory.getFiles();
                 try {
-                    exampleOfGenerateASTTreeInYAML();
-                } catch (FileNotFoundException ex) {
+                    PsiFile psiFile = psiFiles[4];
+                    JavaParser javaParser = new JavaParser();
+                    ParseResult<CompilationUnit> result = javaParser.parse(psiFile.getVirtualFile().getInputStream());
+                    CompilationUnit compilationUnit = result.getResult().get();
+                    List<Node> children = compilationUnit.getChildNodes();
+                    YamlPrinter yamlPrinter = new YamlPrinter(true);
+                    System.out.println(yamlPrinter.output(compilationUnit.getChildNodes().get(0)));
+                } catch (IOException ex) {
                     ex.printStackTrace();
                 }
 
+                if (ProjectUtils.directoryContainsFileWithName(testClass.getName(), psiDirectory)) {
+                    PsiFile psiFile = ProjectUtils.getFileFromDirectoryByName(testClass.getName(), psiDirectory);
+                    psiFile.delete();
+                }
                 psiDirectory.add(testClass);
+
             });
 
 
