@@ -46,24 +46,8 @@ public class DeclarationConverterToJSON {
             jsonDeclaration.add("declaration", getInitializerDeclaration((InitializerDeclaration) bodyDeclaration));
         } else if (bodyDeclaration.isRecordDeclaration()) {
             jsonDeclaration.add("declaration", getRecordDeclaration((RecordDeclaration) bodyDeclaration));
-        } else if (bodyDeclaration.isTypeDeclaration()) {
-            jsonDeclaration.add("declaration", getTypeDeclaration((TypeDeclaration) bodyDeclaration));
         }
-        //todo Think about remove
-//        else if (bodyDeclaration.isCallableDeclaration()) {
-//            jsonDeclaration.add("declaration", getCallableDeclaration((CallableDeclaration) bodyDeclaration));
-//        }
         return jsonDeclaration;
-    }
-
-    public static JsonObject getTypeDeclaration(TypeDeclaration typeDeclaration) {
-        JsonObject jsonTypeDeclaration = new JsonObject();
-        jsonTypeDeclaration.addProperty("mode", TypeDeclaration.class.getName());
-        jsonTypeDeclaration.addProperty("name", typeDeclaration.getNameAsString());
-        jsonTypeDeclaration.add("modifiers", getModifiers(typeDeclaration.getModifiers()));
-        jsonTypeDeclaration.add("members", getDeclarations(typeDeclaration.getMembers()));
-        jsonTypeDeclaration.add("annotations", getExpressions(typeDeclaration.getAnnotations()));
-        return jsonTypeDeclaration;
     }
 
     public static JsonObject getRecordDeclaration(RecordDeclaration recordDeclaration) {
@@ -161,18 +145,6 @@ public class DeclarationConverterToJSON {
         jsonEnumDeclaration.add("modifiers", getModifiers(enumDeclaration.getModifiers()));
         jsonEnumDeclaration.add("members", getDeclarations(enumDeclaration.getMembers()));
         return jsonEnumDeclaration;
-    }
-
-    public static JsonObject getCallableDeclaration(CallableDeclaration callableDeclaration) {
-        JsonObject jsonCallableDeclaration = new JsonObject();
-        jsonCallableDeclaration.addProperty("mode", CallableDeclaration.class.getName());
-        jsonCallableDeclaration.add("modifiers", getModifiers(callableDeclaration.getModifiers()));
-        jsonCallableDeclaration.add("typeParameters", getParameters(callableDeclaration.getParameters()));
-        jsonCallableDeclaration.addProperty("name", callableDeclaration.getNameAsString());
-        jsonCallableDeclaration.add("parameters", getParameters(callableDeclaration.getParameters()));
-        jsonCallableDeclaration.add("thrownExceptions", getTypes(callableDeclaration.getThrownExceptions()));
-        jsonCallableDeclaration.add("receiverParameter", callableDeclaration.getReceiverParameter().isPresent() ? getReceiverParameter((ReceiverParameter) callableDeclaration.getReceiverParameter().get()) : null);
-        return jsonCallableDeclaration;
     }
 
     public static JsonObject getAnnotationDeclaration(AnnotationDeclaration annotationDeclaration) {

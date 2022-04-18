@@ -29,9 +29,7 @@ public class DeclarationConverterToJava {
         JsonObject declaration = jsonObject.getAsJsonObject("declaration");
         if (declaration.get("mode").getAsString().equals(AnnotationDeclaration.class.getName())) {
             return getAnnotationDeclaration(declaration);
-        } else if (declaration.get("mode").getAsString().equals(CallableDeclaration.class.getName())) {
-            return getCallableDeclaration(declaration);
-        } else if (declaration.get("mode").getAsString().equals(EnumDeclaration.class.getName())) {
+        }  else if (declaration.get("mode").getAsString().equals(EnumDeclaration.class.getName())) {
             return getEnumDeclaration(declaration);
         } else if (declaration.get("mode").getAsString().equals(FieldDeclaration.class.getName())) {
             return getFieldDeclaration(declaration);
@@ -51,14 +49,8 @@ public class DeclarationConverterToJava {
             return getInitializerDeclaration(declaration);
         } else if (declaration.get("mode").getAsString().equals(RecordDeclaration.class.getName())) {
             return getRecordDeclaration(declaration);
-        } else if (declaration.get("mode").getAsString().equals(TypeDeclaration.class.getName())) {
-            return getTypeDeclaration(declaration);
         }
         return null;
-    }
-
-    private static TypeDeclaration getTypeDeclaration(JsonObject jsonObject) {
-        return null; //Todo Make it
     }
 
     private static RecordDeclaration getRecordDeclaration(JsonObject jsonObject) {
@@ -183,11 +175,6 @@ public class DeclarationConverterToJava {
                 getExpressions(jsonObject.getAsJsonArray("arguments")),
                 getDeclarations(jsonObject.getAsJsonArray("classBody"))
         );
-    }
-
-    private static CallableDeclaration<?> getCallableDeclaration(JsonObject jsonObject) {
-        //todo Make it
-        return null;
     }
 
     private static AnnotationDeclaration getAnnotationDeclaration(JsonObject jsonObject) {

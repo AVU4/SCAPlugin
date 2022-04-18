@@ -90,15 +90,7 @@ public class ExpressionConverterToJSON {
             jsonExpression.add("expression", getVariableDeclarationExpression((VariableDeclarationExpr) expression));
         } else if (expression.isLongLiteralExpr()) {
             jsonExpression.add("expression", getLongLiteralExpression((LongLiteralExpr) expression));
-        }else if (expression.isLiteralStringValueExpr()) {
-            jsonExpression.add("expression", getLiteralStringValueExpression((LiteralStringValueExpr) expression));
-        } else if (expression.isLiteralExpr()) {
-            jsonExpression.add("expression", getLiteralExpression((LiteralExpr) expression));
         }
-//        if (expression.isAnnotationExpr()) {
-//            jsonExpression.add("expression", getAnnotationExpression((AnnotationExpr) expression));
-//        } else
-            //todo Make all Подумать о наследственности, annotationExpr перекрывает MarkerAnnotationExpr
         return jsonExpression;
     }
 
@@ -236,19 +228,6 @@ public class ExpressionConverterToJSON {
         return jsonLongLiteralExpr;
     }
 
-    public static JsonObject getLiteralStringValueExpression(LiteralStringValueExpr literalStringValueExpr) {
-        JsonObject jsonLiteralStringValueExpr = new JsonObject();
-        jsonLiteralStringValueExpr.addProperty("mode", LiteralStringValueExpr.class.getName());
-        jsonLiteralStringValueExpr.addProperty("value", literalStringValueExpr.getValue());
-        return jsonLiteralStringValueExpr;
-    }
-
-    public static JsonObject getLiteralExpression(LiteralExpr literalExpr) {
-        JsonObject jsonLiteralExpr = new JsonObject();
-        jsonLiteralExpr.addProperty("mode", LiteralExpr.class.getName());
-        return jsonLiteralExpr;
-    }
-
     public static JsonObject getLambdaExpression(LambdaExpr lambdaExpr) {
         JsonObject jsonLambdaExpr = new JsonObject();
         jsonLambdaExpr.addProperty("mode", LambdaExpr.class.getName());
@@ -383,12 +362,5 @@ public class ExpressionConverterToJSON {
         jsonArrayAccessExpression.add("index", getExpression(arrayAccessExpr.getIndex()));
         jsonArrayAccessExpression.add("name", getExpression(arrayAccessExpr.getName()));
         return jsonArrayAccessExpression;
-    }
-
-    public static JsonObject getAnnotationExpression(AnnotationExpr annotationExpr) {
-        JsonObject jsonAnnotationExpression = new JsonObject();
-        jsonAnnotationExpression.addProperty("mode", AnnotationExpr.class.getName());
-        jsonAnnotationExpression.add("name", getName(annotationExpr.getName()));
-        return jsonAnnotationExpression;
     }
 }

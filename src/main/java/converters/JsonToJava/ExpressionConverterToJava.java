@@ -30,9 +30,7 @@ public class ExpressionConverterToJava {
 
     public static Expression getExpression(JsonObject jsonObject) {
         JsonObject expression = jsonObject.getAsJsonObject("expression");
-        if (expression.get("mode").getAsString().equals(AnnotationExpr.class.getName())) {
-            return getAnnotationExpression(expression);
-        } else if (expression.get("mode").getAsString().equals(ArrayAccessExpr.class.getName())) {
+        if (expression.get("mode").getAsString().equals(ArrayAccessExpr.class.getName())) {
             return getArrayAccessExpression(expression);
         } else if (expression.get("mode").getAsString().equals(CastExpr.class.getName())) {
             return getCastExpression(expression);
@@ -100,20 +98,7 @@ public class ExpressionConverterToJava {
             return getVariableDeclarationExpression(expression);
         } else if (expression.get("mode").getAsString().equals(LongLiteralExpr.class.getName())) {
             return getLongLiteralExpression(expression);
-        } else if (expression.get("mode").getAsString().equals(LiteralStringValueExpr.class.getName())) {
-            return getLiteralStringValueExpression(expression);
-        } else if (expression.get("mode").getAsString().equals(LiteralExpr.class.getName())) {
-            return getLiteralExpression(expression);
         }
-        return null;
-    }
-
-    private static LiteralExpr getLiteralExpression(JsonObject jsonObject) {
-        return null; //todo Make it
-    }
-
-    private static LiteralStringValueExpr getLiteralStringValueExpression(JsonObject jsonObject) {
-        //todo Make it
         return null;
     }
 
@@ -338,10 +323,5 @@ public class ExpressionConverterToJava {
                 getExpression(jsonObject.getAsJsonObject("index")),
                 getExpression(jsonObject.getAsJsonObject("name"))
         );
-    }
-
-    private static AnnotationExpr getAnnotationExpression(JsonObject jsonObject) {
-        //todo AnnotationEx
-        return null;
     }
 }

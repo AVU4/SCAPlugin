@@ -32,65 +32,6 @@ public class PatternAnalyzeAction extends AnAction {
             PsiDirectory psiDirectory = ProjectUtils.getSourceDirectory(project);
 
             WriteCommandAction.runWriteCommandAction(project, () -> {
-                PsiElementFactory psiElementFactory = JavaPsiFacade.getInstance(project).getElementFactory();
-                PsiClass testClass = psiElementFactory.createClass("Test");
-
-                VariableDeclarator variableDeclarator = new VariableDeclarator();
-                variableDeclarator.setName("id");
-                variableDeclarator.setType(long.class);
-
-                VariableDeclarator variableDeclarator1 = new VariableDeclarator();
-                variableDeclarator1.setName("person");
-                variableDeclarator1.setType(new ClassOrInterfaceType("Person"));
-
-                FieldDeclaration fieldDeclaration = new FieldDeclaration();
-                fieldDeclaration.setModifiers(Modifier.Keyword.PRIVATE);
-                fieldDeclaration.setVariables(NodeList.nodeList(variableDeclarator));
-
-                FieldDeclaration fieldDeclaration1 = new FieldDeclaration();
-                fieldDeclaration1.setModifiers(Modifier.Keyword.PRIVATE);
-                fieldDeclaration1.setVariables(NodeList.nodeList(variableDeclarator1));
-
-
-
-                Parameter parameter = new Parameter();
-                parameter.setType(long.class);
-                parameter.setName("id");
-
-
-                BlockStmt blockStmt = new BlockStmt();
-                ExpressionStmt expressionStmt = new ExpressionStmt();
-                AssignExpr assignExpr = new AssignExpr();
-                assignExpr.setOperator(AssignExpr.Operator.ASSIGN);
-                assignExpr.setTarget(new FieldAccessExpr().setName("id"));
-                assignExpr.setValue(new NameExpr().setName("id"));
-
-                expressionStmt.setExpression(assignExpr);
-                blockStmt.setStatements(NodeList.nodeList(expressionStmt));
-
-                MethodDeclaration setterId = new MethodDeclaration();
-                setterId.setModifiers(Modifier.Keyword.PUBLIC);
-                setterId.setType(void.class);
-                setterId.setName("setId");
-                setterId.setParameters(NodeList.nodeList(parameter));
-                setterId.setBody(blockStmt);
-
-                BlockStmt blockStmt1 = new BlockStmt();
-                ReturnStmt returnStmt = new ReturnStmt();
-                returnStmt.setExpression(new NameExpr().setName("id"));
-                blockStmt1.setStatements(NodeList.nodeList(returnStmt));
-
-
-                MethodDeclaration getterId = new MethodDeclaration();
-                getterId.setType(long.class);
-                getterId.setModifiers(Modifier.Keyword.PUBLIC);
-                getterId.setName("getId");
-                getterId.setBody(blockStmt1);
-
-                testClass.add(psiElementFactory.createMethodFromText(getterId.toString().replace("\r", ""), testClass));
-                testClass.add(psiElementFactory.createMethodFromText(setterId.toString().replace("\r", ""), testClass));
-                testClass.add(psiElementFactory.createFieldFromText(fieldDeclaration.toString(), testClass));
-                testClass.add(psiElementFactory.createFieldFromText(fieldDeclaration1.toString(), testClass));
 
                 JsonElement json = JavaParserAdapter.parseModule(psiDirectory);
                 System.out.println(json);
@@ -103,11 +44,10 @@ public class PatternAnalyzeAction extends AnAction {
                     System.out.println(exception.getMessage());
                 }
 
-                if (ProjectUtils.directoryContainsFileWithName(testClass.getName(), psiDirectory)) {
-                    PsiFile psiFile = ProjectUtils.getFileFromDirectoryByName(testClass.getName(), psiDirectory);
-                    psiFile.delete();
-                }
-                psiDirectory.add(testClass);
+//                if (ProjectUtils.directoryContainsFileWithName(testClass.getName(), psiDirectory)) {
+//                    PsiFile psiFile = ProjectUtils.getFileFromDirectoryByName(testClass.getName(), psiDirectory);
+//                    psiFile.delete();
+//                }
 
             });
 

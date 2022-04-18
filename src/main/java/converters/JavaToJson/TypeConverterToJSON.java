@@ -40,9 +40,6 @@ public class TypeConverterToJSON {
         } else if (type.isUnknownType()) {
             jsonSpecificType.addProperty("mode", UnknownType.class.getName());
             jsonType.add("type", jsonSpecificType);
-        } else if (type.isReferenceType()) {
-            jsonSpecificType.addProperty("mode", ReferenceType.class.getName());
-            jsonType.add("type", jsonSpecificType);
         } else if (type.isVoidType()) {
             jsonSpecificType.addProperty("mode", VoidType.class.getName());
             jsonType.add("type", jsonSpecificType);
