@@ -1,6 +1,7 @@
 package api;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.google.gson.JsonArray;
@@ -9,6 +10,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 
 import static converters.JavaToJson.DeclarationConverterToJSON.getDeclaration;
+import static converters.JavaToJson.DeclarationConverterToJSON.getImportDeclaration;
 
 public class ConverterToJSON {
 
@@ -19,14 +21,22 @@ public class ConverterToJSON {
             CompilationUnit unit = nodes.get(index);
 
             List<Node> children = unit.getChildNodes();
-            JsonArray jsonChildren = new JsonArray();
-
+            JsonArray jsonImports = new JsonArray();
+            JsonArray jsonDeclarations = new JsonArray();
             for (int i = 0; i < children.size(); i ++) {
                 Node node = children.get(i);
-                jsonChildren.add(getDeclaration((BodyDeclaration<?>) node));
+                if (node instanceof ImportDeclaration) {
+                    jsonImports.add(getImportDeclaration((ImportDeclaration) node));
+                } else if (node instanceof BodyDeclaration<?>) {
+                    jsonDeclarations.add(getDeclaration((BodyDeclaration<?>) node));
+                }
             }
 
-            module.add(jsonChildren);
+            JsonObject jsonClass = new JsonObject();
+            jsonClass.add("imports", jsonImports);
+            jsonClass.add("declarations", jsonDeclarations);
+
+            module.add(jsonClass);
 
         }
 

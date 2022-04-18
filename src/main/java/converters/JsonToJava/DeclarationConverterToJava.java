@@ -1,5 +1,6 @@
 package converters.JsonToJava;
 
+import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.*;
@@ -183,6 +184,22 @@ public class DeclarationConverterToJava {
                 getAnnotationExpressions(jsonObject, "annotations"),
                 new SimpleName(jsonObject.get("name").getAsString()),
                 getDeclarations(jsonObject.getAsJsonArray("members"))
+        );
+    }
+
+    public static NodeList<ImportDeclaration> getImportDeclarations(JsonArray jsonArray) {
+        NodeList<ImportDeclaration> importDeclarations = new NodeList<>();
+        for (JsonElement jsonElement : jsonArray) {
+            importDeclarations.add(getImportDeclaration(jsonElement.getAsJsonObject()));
+        }
+        return importDeclarations;
+    }
+
+    public static ImportDeclaration getImportDeclaration(JsonObject jsonObject) {
+        return new ImportDeclaration(
+                getName(jsonObject.getAsJsonObject("name")),
+                jsonObject.get("isStatic").getAsBoolean(),
+                jsonObject.get("isAsterisk").getAsBoolean()
         );
     }
 }

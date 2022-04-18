@@ -1,5 +1,7 @@
 package api;
 
+import TO.ClassDescription;
+import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -13,6 +15,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
+import org.apache.tools.ant.taskdefs.Java;
 
 import java.util.Arrays;
 
@@ -53,24 +56,39 @@ public class ProjectUtils {
     }
 
     //todo Think about append Plugin
-    public static void generateObject(BodyDeclaration<?> bodyDeclaration, String newName, Project project, PsiDirectory psiDirectory) {
-        PsiFile psiFile = PsiFileFactory.getInstance(project).createFileFromText(newName, JavaLanguage.INSTANCE, bodyDeclaration.toString().replace("\r", ""));
-        PsiJavaFile psiJavaFile = (PsiJavaFile) psiFile;
-        Arrays.stream(psiJavaFile.getClasses()).forEach(psiDirectory::add);
+    public static void generateClasses(ClassDescription classDescription, Project project, PsiDirectory psiDirectory) {
+        StringBuilder classText = new StringBuilder("");
+        classDescription.getImportDeclarations().stream()
+                .map(ImportDeclaration::toString)
+                .map(text -> text.replace("\r", ""))
+                .forEach(classText::append);
+        classDescription.getBodyDeclarations().stream()
+                .map(ProjectUtils::getDeclarationData)
+                .map(text -> text.replace("\r", ""))
+                .forEach(classText::append);
+
+        PsiFile psiFile = PsiFileFactory.getInstance(project).createFileFromText(classDescription.getName(), JavaLanguage.INSTANCE, classText);
+        Arrays.stream(((PsiJavaFile) psiFile).getClasses()).forEach(psiClass -> {
+            if (ProjectUtils.directoryContainsFileWithName(psiClass.getName(), psiDirectory)) {
+                PsiFile fileToRemove = ProjectUtils.getFileFromDirectoryByName(psiClass.getName(), psiDirectory);
+                fileToRemove.delete();
+            }
+            psiDirectory.add(psiClass);
+        });
+
     }
 
-    public static void generateObjects(NodeList<BodyDeclaration<?>> bodyDeclarations, Project project, PsiDirectory psiDirectory) {
-        bodyDeclarations.forEach(bodyDeclaration -> {
-            if (bodyDeclaration.isClassOrInterfaceDeclaration()) {
-                ClassOrInterfaceDeclaration classOrInterfaceDeclaration = (ClassOrInterfaceDeclaration) bodyDeclaration;
-                classOrInterfaceDeclaration.setName(classOrInterfaceDeclaration.getNameAsString() + "Plugin");
-                generateObject(classOrInterfaceDeclaration, classOrInterfaceDeclaration.getNameAsString(), project, psiDirectory);
-            } else if (bodyDeclaration.isEnumDeclaration()) {
-                EnumDeclaration enumDeclaration = (EnumDeclaration) bodyDeclaration;
-                enumDeclaration.setName(enumDeclaration.getNameAsString() + "Plugin");
-                generateObject(enumDeclaration, enumDeclaration.getNameAsString(), project, psiDirectory);
-            }
-        });
+    public static String getDeclarationData(BodyDeclaration<?> bodyDeclaration) {
+        if (bodyDeclaration.isClassOrInterfaceDeclaration()) {
+            ClassOrInterfaceDeclaration classOrInterfaceDeclaration = (ClassOrInterfaceDeclaration) bodyDeclaration;
+            classOrInterfaceDeclaration.setName(classOrInterfaceDeclaration.getNameAsString());
+            return classOrInterfaceDeclaration.toString();
+        } else if (bodyDeclaration.isEnumDeclaration()) {
+            EnumDeclaration enumDeclaration = (EnumDeclaration) bodyDeclaration;
+            enumDeclaration.setName(enumDeclaration.getNameAsString());
+            return enumDeclaration.toString();
+        }
+        return "";
     }
 
 }

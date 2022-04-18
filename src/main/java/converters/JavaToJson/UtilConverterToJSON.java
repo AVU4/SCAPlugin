@@ -1,6 +1,7 @@
 package converters.JavaToJson;
 
 import com.github.javaparser.ast.ArrayCreationLevel;
+import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
