@@ -1,7 +1,7 @@
-import com.github.javaparser.*;
-import com.github.javaparser.ast.CompilationUnit;
+import api.ConverterToJava;
+import api.JavaParserAdapter;
+import api.ProjectUtils;
 import com.github.javaparser.ast.Modifier;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.AssignExpr;
@@ -11,7 +11,8 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.printer.YamlPrinter;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -19,8 +20,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 public class PatternAnalyzeAction extends AnAction {
@@ -33,7 +33,6 @@ public class PatternAnalyzeAction extends AnAction {
 
             WriteCommandAction.runWriteCommandAction(project, () -> {
                 PsiElementFactory psiElementFactory = JavaPsiFacade.getInstance(project).getElementFactory();
-
                 PsiClass testClass = psiElementFactory.createClass("Test");
 
                 VariableDeclarator variableDeclarator = new VariableDeclarator();
@@ -93,26 +92,15 @@ public class PatternAnalyzeAction extends AnAction {
                 testClass.add(psiElementFactory.createFieldFromText(fieldDeclaration.toString(), testClass));
                 testClass.add(psiElementFactory.createFieldFromText(fieldDeclaration1.toString(), testClass));
 
-                // todo think about PsiBuilder, PsiParser
-
-//                ASTNode astNode = testClass.getNode();
-//                ASTNode root = astNode.getFirstChildNode();
-//                try {
-//                    exampleOfGenerateASTTreeInYAML();
-//                } catch (FileNotFoundException ex) {
-//                    ex.printStackTrace();
-//                }
-                PsiFile[] psiFiles = psiDirectory.getFiles();
+                JsonElement json = JavaParserAdapter.parseModule(psiDirectory);
+                System.out.println(json);
                 try {
-                    PsiFile psiFile = psiFiles[4];
-                    JavaParser javaParser = new JavaParser();
-                    ParseResult<CompilationUnit> result = javaParser.parse(psiFile.getVirtualFile().getInputStream());
-                    CompilationUnit compilationUnit = result.getResult().get();
-                    List<Node> children = compilationUnit.getChildNodes();
-                    YamlPrinter yamlPrinter = new YamlPrinter(true);
-                    System.out.println(yamlPrinter.output(compilationUnit.getChildNodes().get(0)));
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+                    JsonElement jsonObject = JsonParser.parseReader(new InputStreamReader(new FileInputStream("C:\\Users\\lexa2\\Desktop\\FactoryExampleJSON.txt")));
+                    ConverterToJava converter = new ConverterToJava();
+                    List<NodeList<BodyDeclaration<?>>> result = converter.parseJsonToJava(jsonObject);
+                    result.forEach(bodyDeclarations -> ProjectUtils.generateObjects(bodyDeclarations, project, psiDirectory));
+                }catch (IOException exception) {
+                    System.out.println(exception.getMessage());
                 }
 
                 if (ProjectUtils.directoryContainsFileWithName(testClass.getName(), psiDirectory)) {
@@ -125,18 +113,5 @@ public class PatternAnalyzeAction extends AnAction {
 
 
         }
-    }
-
-    private void exampleOfGenerateASTTreeInYAML() throws FileNotFoundException {
-        JavaParser javaParser = new JavaParser();
-
-        Node node = javaParser.parseBodyDeclaration("class Test{ public int x;" +
-                "public void setX(int x) {" +
-                "if (x < 5) {" +
-                "   this.x = 5;" +
-                "}" +
-                "} }").getResult().get();
-        System.out.println(new YamlPrinter(true).output(node));
-
     }
 }
