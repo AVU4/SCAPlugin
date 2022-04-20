@@ -18,6 +18,7 @@ import com.intellij.psi.*;
 import org.apache.tools.ant.taskdefs.Java;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class ProjectUtils {
 
@@ -55,40 +56,13 @@ public class ProjectUtils {
         return null;
     }
 
-    //todo Think about append Plugin
-    public static void generateClasses(ClassDescription classDescription, Project project, PsiDirectory psiDirectory) {
-        StringBuilder classText = new StringBuilder("");
-        classDescription.getImportDeclarations().stream()
-                .map(ImportDeclaration::toString)
-                .map(text -> text.replace("\r", ""))
-                .forEach(classText::append);
-        classDescription.getBodyDeclarations().stream()
-                .map(ProjectUtils::getDeclarationData)
-                .map(text -> text.replace("\r", ""))
-                .forEach(classText::append);
-
-        PsiFile psiFile = PsiFileFactory.getInstance(project).createFileFromText(classDescription.getName(), JavaLanguage.INSTANCE, classText);
-        Arrays.stream(((PsiJavaFile) psiFile).getClasses()).forEach(psiClass -> {
-            if (ProjectUtils.directoryContainsFileWithName(psiClass.getName(), psiDirectory)) {
-                PsiFile fileToRemove = ProjectUtils.getFileFromDirectoryByName(psiClass.getName(), psiDirectory);
-                fileToRemove.delete();
-            }
-            psiDirectory.add(psiClass);
-        });
-
+    public static PsiDirectory getPsiDirectoryByName(String name, PsiDirectory psiDirectory) {
+        return Arrays.stream(psiDirectory.getSubdirectories())
+                .filter(subDirectory -> subDirectory.getName().equals(name))
+                .collect(Collectors.toList())
+                .get(0);
     }
 
-    public static String getDeclarationData(BodyDeclaration<?> bodyDeclaration) {
-        if (bodyDeclaration.isClassOrInterfaceDeclaration()) {
-            ClassOrInterfaceDeclaration classOrInterfaceDeclaration = (ClassOrInterfaceDeclaration) bodyDeclaration;
-            classOrInterfaceDeclaration.setName(classOrInterfaceDeclaration.getNameAsString());
-            return classOrInterfaceDeclaration.toString();
-        } else if (bodyDeclaration.isEnumDeclaration()) {
-            EnumDeclaration enumDeclaration = (EnumDeclaration) bodyDeclaration;
-            enumDeclaration.setName(enumDeclaration.getNameAsString());
-            return enumDeclaration.toString();
-        }
-        return "";
-    }
+
 
 }

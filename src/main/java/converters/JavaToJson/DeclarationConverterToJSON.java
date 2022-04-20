@@ -174,7 +174,7 @@ public class DeclarationConverterToJSON {
 
     public static JsonArray getEnumConstantDeclarations(NodeList<EnumConstantDeclaration> enumConstantDeclarations) {
         JsonArray jsonEnumConstantDeclarations = new JsonArray();
-        enumConstantDeclarations.stream().map(DeclarationConverterToJSON::getEnumConstantDeclaration).forEach(jsonEnumConstantDeclarations::add);
+        enumConstantDeclarations.stream().map(DeclarationConverterToJSON::getDeclaration).forEach(jsonEnumConstantDeclarations::add);
         return jsonEnumConstantDeclarations;
     }
 

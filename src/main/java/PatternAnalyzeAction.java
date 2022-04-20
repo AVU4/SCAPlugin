@@ -1,7 +1,5 @@
-import TO.ClassDescription;
-import api.ConverterToJava;
-import api.JavaParserAdapter;
-import api.ProjectUtils;
+import TO.ModuleDescription;
+import api.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -12,7 +10,6 @@ import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
-import java.util.List;
 
 public class PatternAnalyzeAction extends AnAction {
 
@@ -21,16 +18,17 @@ public class PatternAnalyzeAction extends AnAction {
         Project project = e.getProject();
         if (project != null) {
             PsiDirectory psiDirectory = ProjectUtils.getSourceDirectory(project);
+            JavaGenerator javaGenerator = new JavaGenerator(project);
 
             WriteCommandAction.runWriteCommandAction(project, () -> {
 
                 JsonElement json = JavaParserAdapter.parseModule(psiDirectory);
                 System.out.println(json);
                 try {
-                    JsonElement jsonObject = JsonParser.parseReader(new InputStreamReader(new FileInputStream("C:\\Users\\lexa2\\Desktop\\FactoryExampleJSON.txt")));
+                    JsonElement jsonObject = JsonParser.parseReader(new InputStreamReader(new FileInputStream("C:\\Users\\lexa2\\Desktop\\JsonMock.txt")));
                     ConverterToJava converter = new ConverterToJava();
-                    List<ClassDescription> result = converter.parseJsonToJava(jsonObject);
-                    result.forEach(classDescription -> ProjectUtils.generateClasses(classDescription, project, psiDirectory));
+                    ModuleDescription result = converter.parseJsonToJava(jsonObject, project);
+                    javaGenerator.generateFolder(result, psiDirectory);
                 }catch (IOException exception) {
                     System.out.println(exception.getMessage());
                 }

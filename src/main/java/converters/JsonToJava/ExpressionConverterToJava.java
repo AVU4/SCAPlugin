@@ -297,7 +297,9 @@ public class ExpressionConverterToJava {
         return new BinaryExpr(
                 getExpression(jsonObject.getAsJsonObject("left")),
                 getExpression(jsonObject.getAsJsonObject("right")),
-                BinaryExpr.Operator.valueOf(jsonObject.get("operator").getAsString().toUpperCase(Locale.ROOT))
+                Arrays.stream(BinaryExpr.Operator.values())
+                        .filter(operator -> operator.asString().equals(jsonObject.get("operator").getAsString()))
+                        .collect(Collectors.toList()).get(0)
         );
     }
 

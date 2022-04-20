@@ -14,7 +14,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import static converters.JsonToJava.ExpressionConverterToJava.getExpression;
 import static converters.JsonToJava.ExpressionConverterToJava.getExpressions;
@@ -41,7 +43,10 @@ public class UtilConverterToJava {
     }
 
     public static UnaryExpr.Operator getOperator(JsonObject jsonObject) {
-        return UnaryExpr.Operator.valueOf(jsonObject.get("codeRepresentation").getAsString().toUpperCase(Locale.ROOT));
+        return Arrays.stream(UnaryExpr.Operator.values())
+                .filter(operator -> operator.asString().equals(jsonObject.get("codeRepresentation").getAsString()))
+                .collect(Collectors.toList())
+                .get(0);
     }
 
     public static Name getName(JsonObject jsonObject) {
