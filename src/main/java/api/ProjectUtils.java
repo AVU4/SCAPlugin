@@ -18,6 +18,7 @@ import com.intellij.psi.*;
 import org.apache.tools.ant.taskdefs.Java;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProjectUtils {
@@ -61,6 +62,16 @@ public class ProjectUtils {
                 .filter(subDirectory -> subDirectory.getName().equals(name))
                 .collect(Collectors.toList())
                 .get(0);
+    }
+
+    public static void deleteFile(String name, PsiDirectory psiDirectory) {
+        List<PsiFile> psiFile = Arrays.stream(psiDirectory.getFiles()).filter(psiFile1 -> psiFile1.getName().equals(name + ".java")).collect(Collectors.toList());
+        psiFile.get(0).delete();
+    }
+
+    public static void deleteDirectory(String name, PsiDirectory psiDirectory) {
+        PsiDirectory psiDirectoryToDelete = Arrays.stream(psiDirectory.getSubdirectories()).filter(psiDirectory1 -> psiDirectory1.getName().equals(name)).collect(Collectors.toList()).get(0);
+        psiDirectoryToDelete.delete();
     }
 
 
