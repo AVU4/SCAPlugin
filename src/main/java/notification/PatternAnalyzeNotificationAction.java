@@ -1,9 +1,7 @@
 package notification;
 
 import TO.ModuleDescription;
-import api.ConverterToJava;
 import api.JavaGenerator;
-import com.google.gson.JsonElement;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -16,7 +14,6 @@ public class PatternAnalyzeNotificationAction extends AnAction {
     private Project project;
     private PsiDirectory module;
     private JavaGenerator javaGenerator;
-    private ConverterToJava converter;
     private ModuleDescription newState;
     private ModuleDescription previousState;
 
@@ -28,7 +25,6 @@ public class PatternAnalyzeNotificationAction extends AnAction {
 
     public void init(ModuleDescription newState, ModuleDescription previousState, Project project, PsiDirectory module) {
         this.javaGenerator = new JavaGenerator(project);
-        this.converter = new ConverterToJava();
         this.newState = newState;
         this.previousState = previousState;
         this.module = module;

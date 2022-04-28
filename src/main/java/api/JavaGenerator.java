@@ -6,6 +6,7 @@ import TO.PackageDescription;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
@@ -34,6 +35,7 @@ public class JavaGenerator {
     }
 
     public void generateFolder(Description description, PsiDirectory psiDirectory) {
+        VirtualFileManager.getInstance().syncRefresh();
         description.getChildren().forEach(desc -> generateDescriptionConsumer.accept(desc, psiDirectory));
     }
 
@@ -80,5 +82,7 @@ public class JavaGenerator {
             Description descriptionFromPreviousState = previousDescription.getChildren().get(previousDescription.getChildren().indexOf(description1));
             deleteExtraClassFromDirectory(description1, descriptionFromPreviousState, ProjectUtils.getPsiDirectoryByName(description1.getName(), psiDirectory));
         });
+
+        VirtualFileManager.getInstance().syncRefresh();
     }
 }

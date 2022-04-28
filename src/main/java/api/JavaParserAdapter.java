@@ -9,7 +9,6 @@ import com.google.gson.JsonObject;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -55,13 +54,9 @@ public class JavaParserAdapter {
     }
 
     private static CompilationUnit parseFile(PsiFile psiFile, com.github.javaparser.JavaParser parser) {
-        try {
-            ParseResult<CompilationUnit> result =  parser.parse(psiFile.getVirtualFile().getInputStream());
-            if (result.isSuccessful() && result.getResult().isPresent()) {
-                return result.getResult().get();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        ParseResult<CompilationUnit> result =  parser.parse(psiFile.getText());
+        if (result.isSuccessful() && result.getResult().isPresent()) {
+            return result.getResult().get();
         }
         return null;
     }
