@@ -34,5 +34,11 @@ public class Util {
         return "";
     }
 
+    public static boolean equalsContent(String firstContent, String secondContent) {
+        firstContent = firstContent.split(";", 2)[1].replace(" ", "").replace("\n", "");
+        secondContent = secondContent.replace(" ", "").replace("\n", "");
+        return firstContent.equals(secondContent);
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package popup;
 
+import TO.ClassDescription;
 import TO.Description;
 import com.intellij.diff.DiffContentFactory;
 import com.intellij.diff.DiffManager;
@@ -53,7 +54,11 @@ public class ConfirmationListPopupStep extends BaseListPopupStep<Description> {
             return FINAL_CHOICE;
         } else {
             Description description = previousState.getChildren().stream().filter(desc -> selectedValue.getName().equals(desc.getName())).collect(Collectors.toList()).get(0);
-            return new ConfirmationListPopupStep(null, selectedValue.getChildren(), project, description);
+            List<Description> modifiedFiles =
+                    selectedValue.getChildren().stream()
+                            .filter(desc -> !desc.isLeaf() || desc.isLeaf() && ((ClassDescription) desc).getClassStatus() != ClassDescription.ClassStatus.NOT_MODIFIED)
+                            .collect(Collectors.toList());
+            return new ConfirmationListPopupStep(null, modifiedFiles, project, description);
         }
     }
 

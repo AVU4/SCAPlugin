@@ -6,10 +6,7 @@ import TO.PackageDescription;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileFactory;
-import com.intellij.psi.PsiJavaFile;
+import com.intellij.psi.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,12 +38,18 @@ public class JavaGenerator {
     public void generateClassDescription(ClassDescription classDescription, PsiDirectory psiDirectory) {
         String classText = classDescription.toString();
         PsiFile psiFile = PsiFileFactory.getInstance(project).createFileFromText(classDescription.getName(), JavaLanguage.INSTANCE, classText);
+        classDescription.setClassStatus(ClassDescription.ClassStatus.NOT_MODIFIED);
         Arrays.stream(((PsiJavaFile) psiFile).getClasses()).forEach(psiClass -> {
-            if (ProjectUtils.directoryContainsFileWithName(psiClass.getName(), psiDirectory)) {
+            PsiFile oldFile = ProjectUtils.getFileFromDirectoryByName(psiClass.getName(), psiDirectory);
+            if (oldFile == null) {
+                classDescription.setClassStatus(ClassDescription.ClassStatus.NEW);
+                psiDirectory.add(psiClass);
+            } else if (!Util.equalsContent(oldFile.getText(), psiFile.getText())) {
+                classDescription.setClassStatus(ClassDescription.ClassStatus.MODIFIED);
                 PsiFile fileToRemove = ProjectUtils.getFileFromDirectoryByName(psiClass.getName(), psiDirectory);
                 fileToRemove.delete();
+                psiDirectory.add(psiClass);
             }
-            psiDirectory.add(psiClass);
         });
     }
 

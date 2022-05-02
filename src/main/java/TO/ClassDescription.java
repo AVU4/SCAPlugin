@@ -12,6 +12,7 @@ import java.util.Objects;
 public class ClassDescription extends Description {
     private NodeList<ImportDeclaration> importDeclarations;
     private NodeList<BodyDeclaration<?>> bodyDeclarations;
+    private ClassStatus classStatus;
 
     public ClassDescription(NodeList<ImportDeclaration> importDeclarations, NodeList<BodyDeclaration<?>> bodyDeclarations, String name) {
         super(name);
@@ -33,6 +34,14 @@ public class ClassDescription extends Description {
 
     public void setImportDeclarations(NodeList<ImportDeclaration> importDeclarations) {
         this.importDeclarations = importDeclarations;
+    }
+
+    public ClassStatus getClassStatus() {
+        return classStatus;
+    }
+
+    public void setClassStatus(ClassStatus classStatus) {
+        this.classStatus = classStatus;
     }
 
     @Override
@@ -80,5 +89,9 @@ public class ClassDescription extends Description {
                 .map(text -> text.replace("\r", ""))
                 .forEach(classText::append);
         return classText.toString();
+    }
+
+    public enum ClassStatus {
+        NOT_MODIFIED, MODIFIED, NEW;
     }
 }
