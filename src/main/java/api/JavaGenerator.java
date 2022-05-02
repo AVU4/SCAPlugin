@@ -3,7 +3,6 @@ package api;
 import TO.ClassDescription;
 import TO.Description;
 import TO.PackageDescription;
-import com.github.javaparser.ast.ImportDeclaration;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -40,18 +39,8 @@ public class JavaGenerator {
     }
 
     public void generateClassDescription(ClassDescription classDescription, PsiDirectory psiDirectory) {
-        StringBuilder classText = new StringBuilder("");
-        classDescription.getImportDeclarations().stream()
-                .map(ImportDeclaration::toString)
-                .map(text -> text.replace("\r", ""))
-                .forEach(classText::append);
-        classDescription.getBodyDeclarations().stream()
-                .map(Util::getDeclarationData)
-                .map(text -> text.replace("\r", ""))
-                .forEach(classText::append);
-
+        String classText = classDescription.toString();
         PsiFile psiFile = PsiFileFactory.getInstance(project).createFileFromText(classDescription.getName(), JavaLanguage.INSTANCE, classText);
-
         Arrays.stream(((PsiJavaFile) psiFile).getClasses()).forEach(psiClass -> {
             if (ProjectUtils.directoryContainsFileWithName(psiClass.getName(), psiDirectory)) {
                 PsiFile fileToRemove = ProjectUtils.getFileFromDirectoryByName(psiClass.getName(), psiDirectory);

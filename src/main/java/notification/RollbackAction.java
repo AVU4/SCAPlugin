@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 import org.jetbrains.annotations.NotNull;
 
-public class PatternAnalyzeNotificationAction extends AnAction {
+public class RollbackAction extends AnAction {
 
     private Project project;
     private PsiDirectory module;
@@ -19,7 +19,7 @@ public class PatternAnalyzeNotificationAction extends AnAction {
 
     private static final String ROLLBACK_MODIFICATIONS = "Rollback modifications";
 
-    public PatternAnalyzeNotificationAction() {
+    private RollbackAction() {
         super(ROLLBACK_MODIFICATIONS);
     }
 
@@ -41,10 +41,10 @@ public class PatternAnalyzeNotificationAction extends AnAction {
     }
 
 
-    public static PatternAnalyzeNotificationAction createNotificationAction(ModuleDescription newState, ModuleDescription previousState, Project project, PsiDirectory module) {
-        PatternAnalyzeNotificationAction patternAnalyzeNotificationAction = new PatternAnalyzeNotificationAction();
-        patternAnalyzeNotificationAction.init(newState, previousState, project, module);
-        return patternAnalyzeNotificationAction;
+    public static RollbackAction createNotificationAction(ModuleDescription newState, ModuleDescription previousState, Project project, PsiDirectory module) {
+        RollbackAction rollbackAction = new RollbackAction();
+        rollbackAction.init(newState, previousState, project, module);
+        return rollbackAction;
     }
 
 

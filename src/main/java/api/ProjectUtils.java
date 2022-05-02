@@ -1,21 +1,13 @@
 package api;
 
-import TO.ClassDescription;
-import com.github.javaparser.ast.ImportDeclaration;
-import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.BodyDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.EnumDeclaration;
-import com.intellij.lang.Language;
-import com.intellij.lang.java.JavaLanguage;
-import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.*;
-import org.apache.tools.ant.taskdefs.Java;
+import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +23,6 @@ public class ProjectUtils {
         ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
         VirtualFile[] virtualFiles = moduleRootManager.getSourceRoots();
         for (VirtualFile virtualFile : virtualFiles) {
-            System.out.println(virtualFile.getPath());
             if (virtualFile.getPath().endsWith("main/java")) {
                 return PsiManager.getInstance(project).findDirectory(virtualFile);
             }

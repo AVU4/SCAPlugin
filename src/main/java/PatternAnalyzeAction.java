@@ -14,7 +14,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiDirectory;
 import notification.PatternAnalyzeNotification;
-import notification.PatternAnalyzeNotificationAction;
+import notification.RollbackAction;
+import notification.ShowDifferencesAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileInputStream;
@@ -38,15 +39,17 @@ public class PatternAnalyzeAction extends AnAction {
             ConverterToJava converter = new ConverterToJava();
 
             JsonElement json = JavaParserAdapter.parseModule(psiDirectory);
+            ModuleDescription previousState = converter.parseJsonToJava(json, project);
             System.out.println(json);
             try {
                 JsonElement jsonObject = JsonParser.parseReader(new InputStreamReader(new FileInputStream("C:\\Users\\lexa2\\Desktop\\JsonMock.txt")));
 
-                ModuleDescription result = converter.parseJsonToJava(jsonObject, project);
-                javaGenerator.generateFolder(result, psiDirectory);
+                ModuleDescription newState = converter.parseJsonToJava(jsonObject, project);
+                javaGenerator.generateFolder(newState, psiDirectory);
 
-                PatternAnalyzeNotificationAction action = PatternAnalyzeNotificationAction.createNotificationAction(result, converter.parseJsonToJava(json, project), project, psiDirectory);
-                Notification notification = PatternAnalyzeNotification.createNotification(action);
+                RollbackAction rollbackAction = RollbackAction.createNotificationAction(newState, previousState, project, psiDirectory);
+                ShowDifferencesAction showDifferencesAction = ShowDifferencesAction.createShowDifferencesAction(previousState, newState, project);
+                Notification notification = PatternAnalyzeNotification.createNotification(rollbackAction, showDifferencesAction);
                 Notifications.Bus.notify(notification, project);
 
             }catch (IOException exception) {

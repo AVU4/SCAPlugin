@@ -1,5 +1,6 @@
 package TO;
 
+import api.Util;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.BodyDeclaration;
@@ -65,5 +66,19 @@ public class ClassDescription extends Description {
     @Override
     public int hashCode() {
         return Objects.hash(importDeclarations, bodyDeclarations);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder classText = new StringBuilder("");
+        importDeclarations.stream()
+                .map(ImportDeclaration::toString)
+                .map(text -> text.replace("\r", ""))
+                .forEach(classText::append);
+        bodyDeclarations.stream()
+                .map(Util::getDeclarationData)
+                .map(text -> text.replace("\r", ""))
+                .forEach(classText::append);
+        return classText.toString();
     }
 }

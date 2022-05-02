@@ -9,11 +9,12 @@ import com.intellij.openapi.actionSystem.AnAction;
 public class PatternAnalyzeNotification {
 
     private static final NotificationGroup notificationGroup =
-            new NotificationGroup("pattern.analyze.notification", NotificationDisplayType.BALLOON, true);
+            new NotificationGroup("pattern.analyze.notification", NotificationDisplayType.STICKY_BALLOON, true);
 
-    public static Notification createNotification(AnAction anAction) {
+    public static Notification createNotification(AnAction rollbackAction, AnAction showDifferences) {
         Notification notification = notificationGroup.createNotification("Do you want to rollback modifications?", NotificationType.INFORMATION);
-        notification.addAction(anAction);
+        notification.addAction(rollbackAction);
+        notification.addAction(showDifferences);
         return notification;
     }
 }
