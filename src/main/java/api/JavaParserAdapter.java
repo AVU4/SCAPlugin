@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 public class JavaParserAdapter {
 
     public static JsonElement parseModule(PsiDirectory psiModule) {
-        //todo Need to refresh project to changes will be access
-
         JsonObject jsonModule = new JsonObject();
         jsonModule.add(psiModule.getName(), parseDirectory(psiModule));
         return jsonModule;
@@ -46,11 +44,7 @@ public class JavaParserAdapter {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        ConverterToJSON converter = new ConverterToJSON();
-
-        JsonElement json = converter.converter(nodes);
-
-        return json;
+        return ConverterToJSON.converter(nodes);
     }
 
     private static CompilationUnit parseFile(PsiFile psiFile, com.github.javaparser.JavaParser parser) {

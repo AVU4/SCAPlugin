@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>org.example.SCA</id>
     <name>Smart Code Analytics</name>
-    <vendor></vendor>
+    <vendor>1</vendor>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
          on how to target different products -->

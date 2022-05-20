@@ -22,7 +22,7 @@ public class JavaGenerator {
             PackageDescription packageDescription = (PackageDescription) description;
             generateFolder(packageDescription, ProjectUtils.getPsiDirectoryByName(packageDescription.getName(), psiDirectory));
         } else {
-            generateClassDescription((ClassDescription) description, psiDirectory);
+            generateClass((ClassDescription) description, psiDirectory);
         }
     });
 
@@ -35,7 +35,7 @@ public class JavaGenerator {
         description.getChildren().forEach(desc -> generateDescriptionConsumer.accept(desc, psiDirectory));
     }
 
-    public void generateClassDescription(ClassDescription classDescription, PsiDirectory psiDirectory) {
+    public void generateClass(ClassDescription classDescription, PsiDirectory psiDirectory) {
         String classText = classDescription.toString();
         PsiFile psiFile = PsiFileFactory.getInstance(project).createFileFromText(classDescription.getName(), JavaLanguage.INSTANCE, classText);
         classDescription.setClassStatus(ClassDescription.ClassStatus.NOT_MODIFIED);

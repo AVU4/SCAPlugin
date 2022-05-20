@@ -18,8 +18,6 @@ import notification.RollbackAction;
 import notification.ShowDifferencesAction;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class PatternAnalyzeAction extends AnAction {
@@ -40,10 +38,8 @@ public class PatternAnalyzeAction extends AnAction {
 
             JsonElement json = JavaParserAdapter.parseModule(psiDirectory);
             ModuleDescription previousState = converter.parseJsonToJava(json, project);
-            System.out.println(json);
-            try {
-                JsonElement jsonObject = JsonParser.parseReader(new InputStreamReader(new FileInputStream("C:\\Users\\lexa2\\Desktop\\JsonMock.txt")));
-
+            JsonElement jsonObject = getJson(json);
+            if (jsonObject != null) {
                 ModuleDescription newState = converter.parseJsonToJava(jsonObject, project);
                 javaGenerator.generateFolder(newState, psiDirectory);
 
@@ -51,11 +47,12 @@ public class PatternAnalyzeAction extends AnAction {
                 ShowDifferencesAction showDifferencesAction = ShowDifferencesAction.createShowDifferencesAction(previousState, newState, project);
                 Notification notification = PatternAnalyzeNotification.createNotification(rollbackAction, showDifferencesAction);
                 Notifications.Bus.notify(notification, project);
-
-            }catch (IOException exception) {
-                System.out.println(exception.getMessage());
             }
-
         });
+    }
+
+    private JsonElement getJson(JsonElement jsonElement) {
+        System.out.println(jsonElement);
+        return JsonParser.parseReader(new InputStreamReader(this.getClass().getResourceAsStream("JsonMock.json")));
     }
 }

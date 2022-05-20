@@ -19,6 +19,10 @@ import java.util.stream.Collectors;
 
 public class ConfirmationListPopupStep extends BaseListPopupStep<Description> {
 
+    private static final String COMPARING_FILES_TITLE = "Comparing files";
+    private static final String PREVIOUS_STATE_TITLE = "Previous state";
+    private static final String NEW_STATE_TITLE ="New state";
+
     private Project project;
     private Description previousState;
 
@@ -44,7 +48,6 @@ public class ConfirmationListPopupStep extends BaseListPopupStep<Description> {
     @Override
     public @Nullable PopupStep<?> onChosen(Description selectedValue, boolean finalChoice) {
         if (selectedValue.isLeaf()) {
-            //todo think about status
             List<Description> prevState = previousState.getChildren().stream().filter(desc -> desc.getName().equals(selectedValue.getName())).collect(Collectors.toList());
             if (prevState.size() != 0) {
                 DiffManager.getInstance().showDiff(project, createSimpleDiffRequest(prevState.get(0).toString(), selectedValue.toString()));
@@ -65,7 +68,7 @@ public class ConfirmationListPopupStep extends BaseListPopupStep<Description> {
     private SimpleDiffRequest createSimpleDiffRequest(String prevContent, String newContent) {
         DiffContent prevStateOfFile = DiffContentFactory.getInstance().create(prevContent, JavaFileType.INSTANCE);
         DiffContent nextStateOfFile = DiffContentFactory.getInstance().create(newContent, JavaFileType.INSTANCE);
-        return new SimpleDiffRequest("Comparing files", prevStateOfFile, nextStateOfFile, "Previous state", "New State");
+        return new SimpleDiffRequest(COMPARING_FILES_TITLE, prevStateOfFile, nextStateOfFile, PREVIOUS_STATE_TITLE, NEW_STATE_TITLE);
     }
 
 }

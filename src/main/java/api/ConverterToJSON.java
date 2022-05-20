@@ -14,17 +14,14 @@ import static converters.JavaToJson.DeclarationConverterToJSON.getImportDeclarat
 
 public class ConverterToJSON {
 
-    public JsonArray converter(List<CompilationUnit> nodes) {
+    public static JsonArray converter(List<CompilationUnit> nodes) {
         JsonArray module = new JsonArray();
 
-        for (int index = 0; index < nodes.size(); index ++) {
-            CompilationUnit unit = nodes.get(index);
-
+        for (CompilationUnit unit : nodes) {
             List<Node> children = unit.getChildNodes();
             JsonArray jsonImports = new JsonArray();
             JsonArray jsonDeclarations = new JsonArray();
-            for (int i = 0; i < children.size(); i ++) {
-                Node node = children.get(i);
+            for (Node node : children) {
                 if (node instanceof ImportDeclaration) {
                     jsonImports.add(getImportDeclaration((ImportDeclaration) node));
                 } else if (node instanceof BodyDeclaration<?>) {
